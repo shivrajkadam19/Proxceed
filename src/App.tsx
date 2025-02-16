@@ -11,16 +11,39 @@
 // import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 // import Zocial from 'react-native-vector-icons/Zocial';
 
+import React, { useEffect } from "react";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { store, persistor } from "./app/redux/store.ts";
+import RootNavigator from "./navigation/root-navigator";
+import { initializeBackgroundSync } from "./services/backgroundSync.ts";
+import { fetch } from "@react-native-community/netinfo";
 
-import React from 'react';
-import { AppProvider } from './app/context/ThemeProvider'; // Make sure to adjust the import path
-import RootNavigator from './navigation/root-navigator'; // Your RootNavigator
 
-const App: React.FC = () => {
+
+const App = () => {
+
+  useEffect(() => {
+    fetch().then(state => {
+      console.log("Connection type", state.type);
+      console.log("Is connected?", state.isConnected);
+    });
+  });
+
+  console.log("happy coding");
+  useEffect(() => {
+    initializeBackgroundSync();
+  }, []);
+
   return (
-    <AppProvider>
+    // <Provider store={store}>
+    //   <PersistGate loading={null} persistor={persistor}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <RootNavigator />
-    </AppProvider>
+    </GestureHandlerRootView>
+    //   </PersistGate>
+    // </Provider>
   );
 };
 

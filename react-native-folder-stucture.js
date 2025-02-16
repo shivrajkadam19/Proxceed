@@ -51,3 +51,33 @@ my-react-native-app/
 ├── tsconfig.json           # TypeScript config
 ├── package.json
 └── README.md
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+📂 store/
+ ┣ 📜 store.js
+ ┣ 📜 rootReducer.js
+ ┣ 📜 rootSaga.js
+ ┣ 📂 features/
+ ┃ ┣ 📂 auth/
+ ┃ ┃ ┣ 📜 authSlice.js
+ ┃ ┃ ┣ 📜 authSaga.js
+ ┃ ┣ 📂 posts/
+ ┃ ┃ ┣ 📜 postsSlice.js
+ ┃ ┃ ┣ 📜 postsSaga.js
+ ┃ ┣ 📂 notifications/
+ ┃ ┃ ┣ 📜 notificationsSlice.js
+ ┃ ┃ ┣ 📜 notificationsSaga.js
