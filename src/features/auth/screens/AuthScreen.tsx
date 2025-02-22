@@ -2,20 +2,19 @@ import React, { FC, useEffect, useState } from 'react';
 import { View, ScrollView, Image, Dimensions, TouchableOpacity, Text, TextInput, StyleSheet } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, interpolateColor } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { replace } from '../../../utils/NavigationUtil';
 
 const { width } = Dimensions.get('window');
 
 const AuthScreen: FC = ({ route }) => {
     const navigation = useNavigation();
 
-    // Read initial tab from route params and set appropriate values
-    const initialTab = route.params?.tab;
-
-    const toggleValue = useSharedValue(initialTab); // 0 for login, 1 for signup
+    const initialTab = route.params?.tab || 0;
+    const toggleValue = useSharedValue(initialTab);
     const [activeTab, setActiveTab] = useState<'login' | 'signup'>(initialTab === 0 ? 'login' : 'signup');
 
     useEffect(() => {
-        // Whenever route.params changes, update state and animation
         setActiveTab(initialTab === 0 ? 'login' : 'signup');
         toggleValue.value = withTiming(initialTab, { duration: 200 });
     }, [route.params?.tab]);
@@ -30,10 +29,10 @@ const AuthScreen: FC = ({ route }) => {
         transform: [{ translateX: withTiming(toggleValue.value * (width * 0.25), { duration: 200 }) }],
     }));
 
-    // Animated text color for login & signup
     const loginTextStyle = useAnimatedStyle(() => ({
         color: interpolateColor(toggleValue.value, [0, 1], ['#ffffff', '#626262']),
     }));
+
     const signupTextStyle = useAnimatedStyle(() => ({
         color: interpolateColor(toggleValue.value, [0, 1], ['#626262', '#ffffff']),
     }));
@@ -52,14 +51,7 @@ const AuthScreen: FC = ({ route }) => {
 
                 {/* Toggle Bar */}
                 <View style={{ alignItems: 'center', marginBottom: 20 }}>
-                    <View style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        borderRadius: 25,
-                        backgroundColor: '#E6E6E6',
-                        paddingHorizontal: 5,
-                        paddingVertical: 5,
-                    }}>
+                    <View style={styles.toggleWrapper}>
                         <View style={styles.toggleContainer}>
                             <Animated.View style={[styles.indicator, indicatorStyle]} />
                             <TouchableOpacity style={styles.toggleButton} onPress={() => handleTabPress('login')}>
@@ -72,12 +64,10 @@ const AuthScreen: FC = ({ route }) => {
                     </View>
                 </View>
 
-
-
+                {/* Form Fields */}
                 {activeTab === 'login' ? (
                     <>
-
-                        < View style={{ marginBottom: 20 }}>
+                        <View style={{ marginBottom: 20 }}>
                             <Text style={styles.label}>Email ID*</Text>
                             <TextInput style={styles.input} placeholder="Enter your email" placeholderTextColor={'black'} />
                         </View>
@@ -88,8 +78,7 @@ const AuthScreen: FC = ({ route }) => {
                     </>
                 ) : (
                     <>
-
-                        < View style={{ marginBottom: 20 }}>
+                        <View style={{ marginBottom: 20 }}>
                             <Text style={styles.label}>Select Country*</Text>
                             <TextInput style={styles.input} placeholder="Enter your email" placeholderTextColor={'black'} />
                         </View>
@@ -100,18 +89,39 @@ const AuthScreen: FC = ({ route }) => {
                     </>
                 )}
 
+                {/* Continue Button */}
+                <TouchableOpacity onPress={() => replace('OTPScreen')} style={styles.submitButton}>
+                    <Text style={styles.submitText}>{activeTab === 'login' ? 'Login' : 'Send OTP'}</Text>
+                </TouchableOpacity>
 
-                {activeTab === 'login' ? (
-                    <TouchableOpacity style={styles.submitButton}>
-                        <Text style={styles.submitText}>Log In</Text>
-                    </TouchableOpacity>
-                ) : (
-                    <TouchableOpacity onPress={() => navigation.navigate('OTPScreen')} style={styles.submitButton}>
-                        <Text style={styles.submitText}>Send OTP</Text>
-                    </TouchableOpacity>
-                )}
+                {/* Separator */}
+                <View style={styles.separatorContainer}>
+                    <View style={styles.separator} />
+                    <Text style={styles.separatorText}>or</Text>
+                    <View style={styles.separator} />
+                </View>
+
+                {/* Social Login Buttons */}
+                <TouchableOpacity style={styles.socialButton}>
+                    {/* <FontAwesome name="google" size={20} color="#000000" style={styles.icon} /> */}
+                    <Image source={require('../../../assets/images/google.png')} style={[styles.icon, {
+                        height: 20,
+                        width: 20,
+                        resizeMode: 'contain'
+                    }]} />
+                    <Text style={styles.socialText}>Continue with Google</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.socialButton}>
+                    <FontAwesome name="apple" size={20} color="#000000" style={styles.icon} />
+                    <Text style={styles.socialText}>Continue with Apple</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={[styles.socialButton, styles.guestButton]}>
+                    <Text style={[styles.socialText, { color: '#07919C' }]}>Guest Login</Text>
+                </TouchableOpacity>
             </View>
-        </ScrollView >
+        </ScrollView>
     );
 };
 
@@ -119,6 +129,14 @@ export default AuthScreen;
 
 // Styles
 const styles = StyleSheet.create({
+    toggleWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderRadius: 25,
+        backgroundColor: '#E6E6E6',
+        paddingHorizontal: 5,
+        paddingVertical: 5,
+    },
     toggleContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -135,7 +153,6 @@ const styles = StyleSheet.create({
         height: '100%',
         backgroundColor: '#07919C',
         borderRadius: 20,
-        overflow: 'hidden',
     },
     toggleButton: {
         flex: 1,
@@ -146,9 +163,6 @@ const styles = StyleSheet.create({
     toggleText: {
         fontSize: 13,
         fontWeight: '500',
-        lineHeight: 16.9,
-        textAlign: 'center',
-        fontFamily: 'IBM Plex Sans',
     },
     label: {
         marginBottom: 10,
@@ -171,9 +185,42 @@ const styles = StyleSheet.create({
     submitText: {
         fontSize: 16,
         fontWeight: '500',
-        lineHeight: 19,
-        textAlign: 'center',
         color: '#ffffff',
-        fontFamily: 'IBM Plex Sans',
+    },
+    separatorContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 20,
+    },
+    separator: {
+        flex: 1,
+        height: 1,
+        backgroundColor: '#ccc',
+    },
+    separatorText: {
+        marginHorizontal: 10,
+        fontSize: 16,
+        color: '#636363',
+    },
+    socialButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: '#07919C',
+        borderRadius: 25,
+        height: 50,
+        marginVertical: 5,
+    },
+    guestButton: {
+        backgroundColor: 'transparent',
+    },
+    socialText: {
+        fontSize: 16,
+        fontWeight: '500',
+        color: '#07919C',
+    },
+    icon: {
+        marginRight: 10,
     },
 });

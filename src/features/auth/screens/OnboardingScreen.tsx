@@ -2,9 +2,8 @@ import React from 'react'
 import { View, Text, Image, Pressable, Dimensions, ScrollView, TouchableOpacity } from 'react-native'
 const { width, height } = Dimensions.get('window');
 import Octicons from 'react-native-vector-icons/Octicons';
-import { useNavigation } from '@react-navigation/native';
+import { replace } from '../../../utils/NavigationUtil';
 const OnboardingScreen = () => {
-    const navigation = useNavigation();
     return (
         <ScrollView
             contentContainerStyle={{
@@ -64,7 +63,7 @@ const OnboardingScreen = () => {
                         paddingVertical: 8,
                         borderRadius: 25,
                     }}
-                        onPress={() => navigation.replace('AuthScreen', {
+                        onPress={() => replace('AuthScreen', {
                             tab: 1
                         })}
                     >
@@ -77,6 +76,26 @@ const OnboardingScreen = () => {
                             color: '#ffffff',
                             fontFamily: 'IBM Plex Sans'
                         }}>Join Proxceed</Text>
+                    </Pressable>
+                    <Pressable style={{
+                        backgroundColor: '#07919C',
+                        paddingHorizontal: width * 0.1,
+                        paddingVertical: 8,
+                        borderRadius: 25,
+                    }}
+                        onPress={() => replace('AuthScreen', {
+                            tab: 1
+                        })}
+                    >
+
+                        <Text style={{
+                            fontSize: 20,
+                            fontWeight: 500,
+                            lineHeight: 26,
+                            textAlign: 'center',
+                            color: '#ffffff',
+                            fontFamily: 'IBM Plex Sans'
+                        }}>Guest Login</Text>
                     </Pressable>
                     <View style={{
                         flexDirection: 'row',
@@ -92,7 +111,7 @@ const OnboardingScreen = () => {
                             fontFamily: 'IBM Plex Sans'
                         }}>Already have account ?  </Text>
                         <Text
-                            onPress={() => navigation.replace('AuthScreen', {
+                            onPress={() => replace('AuthScreen', {
                                 tab: 0
                             })}
                             style={{

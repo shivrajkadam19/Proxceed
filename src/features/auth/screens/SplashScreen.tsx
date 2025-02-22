@@ -1,20 +1,18 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Image, Dimensions, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-
+import { replace } from '../../../utils/NavigationUtil';
 const { width, height } = Dimensions.get('window');
 
 const SplashScreen = () => {
-    const navigation = useNavigation();
 
     useEffect(() => {
         const timer = setTimeout(() => {
             // console.log('succes')
-            navigation.replace('OnboardingScreen');
+            replace('OnboardingScreen');
         }, 3000);
 
         return () => clearTimeout(timer); // Cleanup the timer
-    }, [navigation]);
+    }, [replace]);
 
     return (
         <ScrollView

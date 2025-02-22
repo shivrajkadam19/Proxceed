@@ -101,7 +101,6 @@ const styles = StyleSheet.create({
         height: TAB_HEIGHT,
         width,
         bottom: 0,
-        elevation: 5,
     },
     tabContainer: {
         flexDirection: 'row',
@@ -128,6 +127,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         alignSelf: 'center',
         bottom: 20,
+        elevation: 10,
     },
 });
 

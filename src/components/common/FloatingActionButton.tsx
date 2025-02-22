@@ -1,30 +1,35 @@
 import React, { useState, useCallback } from "react";
-import { View, StyleSheet, Dimensions, Pressable } from "react-native";
-import Animated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
-import Icon from "react-native-vector-icons/Feather";
-import debounce from "lodash/debounce"; // Import debounce
+import { View, StyleSheet, Dimensions, Pressable, Text } from "react-native";
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withSpring,
+    withTiming,
+    withDelay
+} from "react-native-reanimated";
+import Icon from "./Icon";
+import debounce from "lodash/debounce";
 
 const { width, height } = Dimensions.get("window");
 
 const FloatingActionButton = () => {
-    const buttons = [
-        { icon: "plus", x: -0.15, y: -0.05 },
-        { icon: "camera", x: 0, y: -0.1 },
-        { icon: "heart", x: 0.15, y: -0.05 },
+    const buttons: { icon: string, x: number, y: number, delay: number, iconFamily: "MaterialIcons" | "Feather" | "Fontisto", title: string }[] = [
+        { icon: "add-to-photos", x: -0.15, y: -0.05, delay: 50, iconFamily: "MaterialIcons", title: "Post" },
+        { icon: "camera", x: 0, y: -0.1, delay: 100, iconFamily: "Feather", title: "Camera" },
+        { icon: "ticket", x: 0.15, y: -0.05, delay: 150, iconFamily: "Fontisto", title: "Event" },
     ];
 
     const [expanded, setExpanded] = useState(false);
     const mode = useSharedValue(0);
 
-    // Debounced function to prevent rapid clicks
     const toggleMenu = useCallback(
         debounce(() => {
             setExpanded((prev) => {
                 const newVal = !prev;
-                mode.value = withTiming(newVal ? 1 : 0, { duration: 300 });
+                mode.value = withSpring(newVal ? 1 : 0, { damping: 8, stiffness: 150 });
                 return newVal;
             });
-        }, 200), // 200ms delay to match animation duration
+        }, 150), // Faster debounce
         [mode]
     );
 
@@ -37,15 +42,17 @@ const FloatingActionButton = () => {
             {buttons.map((button, index) => {
                 const animatedStyle = useAnimatedStyle(() => ({
                     transform: [
-                        { translateX: withTiming(mode.value * (button.x * width), { duration: 300 }) },
-                        { translateY: withTiming(mode.value * (button.y * height), { duration: 300 }) }
+                        { translateX: withDelay(button.delay, withSpring(mode.value * (button.x * width), { damping: 8, stiffness: 150 })) },
+                        { translateY: withDelay(button.delay, withSpring(mode.value * (button.y * height), { damping: 8, stiffness: 150 })) }
                     ],
+                    opacity: withDelay(button.delay, withTiming(mode.value, { duration: 200 })),
                 }));
 
                 return (
                     <Animated.View key={index} style={[styles.secondaryButton, animatedStyle]}>
                         <Pressable style={styles.button}>
-                            <Icon name={button.icon} size={20} color="#FFF" />
+                            <Icon name={button.icon} size={20} color="#FFF" iconFamily={button.iconFamily} />
+                            <Text style={styles.buttonText}>{button.title}</Text>
                         </Pressable>
                     </Animated.View>
                 );
@@ -53,7 +60,7 @@ const FloatingActionButton = () => {
 
             <Pressable onPress={toggleMenu} style={[styles.mainButton, { backgroundColor: expanded ? "#ffffff" : "#07919C" }]}>
                 <Animated.View style={animatedButtonStyle}>
-                    <Icon name="plus" size={26} color={expanded ? '#000000' : '#ffffff'} />
+                    <Icon name="plus" size={26} color={expanded ? '#000000' : '#ffffff'} iconFamily={"Feather"} />
                 </Animated.View>
             </Pressable>
         </View>
@@ -80,19 +87,25 @@ const styles = StyleSheet.create({
         position: "absolute",
         alignItems: "center",
         justifyContent: "center",
-        width: 48,
-        height: 48,
-        borderRadius: 24,
+        width: 50,
+        height: 50,
+        borderRadius: 29,
         backgroundColor: "#07919C",
     },
     button: {
         alignItems: "center",
         justifyContent: "center",
-        width: 48,
-        height: 48,
-        borderRadius: 24,
+        width: 50,
+        height: 50,
+        borderRadius: 29,
         backgroundColor: "#07919C",
     },
+    buttonText: {
+        fontFamily: 'Roboto',
+        fontSize: 10,
+        fontWeight: 300,
+        color: '#ffffff'
+    }
 });
 
 export default FloatingActionButton;

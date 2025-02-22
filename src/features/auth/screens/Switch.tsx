@@ -8,7 +8,15 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-const Switch = ({
+interface SwitchProps {
+  value: { value: number };
+  onPress: () => void;
+  style?: object;
+  duration?: number;
+  trackColors?: { on: string; off: string };
+}
+
+const Switch: React.FC<SwitchProps> = ({
   value,
   onPress,
   style,
