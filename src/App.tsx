@@ -19,7 +19,8 @@ import { store, persistor } from "./app/redux/store.ts";
 import RootNavigator from "./navigation/root-navigator";
 import { initializeBackgroundSync } from "./services/backgroundSync.ts";
 import { fetch } from "@react-native-community/netinfo";
-
+import { NavigationContainer } from "@react-navigation/native";
+import { navigationRef } from "./utils/NavigationUtil.tsx";
 
 
 const App = () => {
@@ -37,13 +38,15 @@ const App = () => {
   }, []);
 
   return (
-    // <Provider store={store}>
-    //   <PersistGate loading={null} persistor={persistor}>
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <RootNavigator />
-    </GestureHandlerRootView>
-    //   </PersistGate>
-    // </Provider>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <NavigationContainer ref={navigationRef}>
+            <RootNavigator />
+          </NavigationContainer>
+        </GestureHandlerRootView>
+      </PersistGate>
+    </Provider>
   );
 };
 
