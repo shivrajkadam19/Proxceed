@@ -1425,6 +1425,11 @@
   dependencies:
     merge-options "^3.0.4"
 
+"@react-native-camera-roll/camera-roll@^7.9.0":
+  version "7.9.0"
+  resolved "https://registry.npmjs.org/@react-native-camera-roll/camera-roll/-/camera-roll-7.9.0.tgz"
+  integrity sha512-Ra0lB1G2H11MzL5aIH3bwlxU1zaHGSZeRs4lBXLBO64Ai1gUgZPR7TYgKDeeRPzNPtSbZKmzs+fuZ/7XoCf1SA==
+
 "@react-native-community/cli-clean@15.0.1":
   version "15.0.1"
   resolved "https://registry.npmjs.org/@react-native-community/cli-clean/-/cli-clean-15.0.1.tgz"
@@ -6201,6 +6206,11 @@ react-native-drawer-layout@^4.1.1:
   dependencies:
     use-latest-callback "^0.2.1"
 
+react-native-fast-image@^8.6.3:
+  version "8.6.3"
+  resolved "https://registry.npmjs.org/react-native-fast-image/-/react-native-fast-image-8.6.3.tgz"
+  integrity sha512-Sdw4ESidXCXOmQ9EcYguNY2swyoWmx53kym2zRsvi+VeFCHEdkO+WG1DK+6W81juot40bbfLNhkc63QnWtesNg==
+
 react-native-gesture-handler@^2.23.1:
   version "2.23.1"
   resolved "https://registry.npmjs.org/react-native-gesture-handler/-/react-native-gesture-handler-2.23.1.tgz"
@@ -6219,6 +6229,11 @@ react-native-keychain@^9.2.3:
   version "9.2.3"
   resolved "https://registry.npmjs.org/react-native-keychain/-/react-native-keychain-9.2.3.tgz"
   integrity sha512-dbn50fk4HLr4JQ71X3j6ZSTbKv+G9s85Zv9cE2na7k7KGn1j+wxjqGTE3wG+WKB3nNEylgu/KXR99mtsC/hpRQ==
+
+react-native-linear-gradient@^2.8.3:
+  version "2.8.3"
+  resolved "https://registry.npmjs.org/react-native-linear-gradient/-/react-native-linear-gradient-2.8.3.tgz"
+  integrity sha512-KflAXZcEg54PXkLyflaSZQ3PJp4uC4whM7nT/Uot9m0e/qxFV3p6uor1983D1YOBJbJN7rrWdqIjq0T42jOJyA==
 
 react-native-otp-textinput@^1.1.6:
   version "1.1.6"

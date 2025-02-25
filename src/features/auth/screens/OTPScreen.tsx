@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import {
     View,
     Text,
@@ -7,20 +7,22 @@ import {
     ScrollView,
     TouchableOpacity,
     Animated,
+    TextInput
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import OTPTextInput from 'react-native-otp-textinput';
 
 const { width } = Dimensions.get('window');
 
 const OTPScreen = () => {
     const navigation = useNavigation();
-    const [otp, setOtp] = useState('');
+    const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [isError, setIsError] = useState(false);
     const shakeAnimation = useRef(new Animated.Value(0)).current;
+    const inputRefs = useRef([]);
 
     const handleVerifyOTP = () => {
-        if (otp !== '123456') {
+        const enteredOTP = otp.join('');
+        if (enteredOTP !== '123456') {
             setIsError(true);
             startShake();
         } else {
@@ -37,6 +39,24 @@ const OTPScreen = () => {
         ]).start(() => shakeAnimation.setValue(0));
     };
 
+    const handleChangeText = (text, index) => {
+        if (text.length > 1) return; // Prevent more than one character
+
+        let newOtp = [...otp];
+        newOtp[index] = text;
+        setOtp(newOtp);
+
+        if (text && index < 5) {
+            inputRefs.current[index + 1]?.focus();
+        }
+    };
+
+    const handleKeyPress = (e, index) => {
+        if (e.nativeEvent.key === 'Backspace' && !otp[index] && index > 0) {
+            inputRefs.current[index - 1]?.focus();
+        }
+    };
+
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
             <View style={styles.container}>
@@ -44,28 +64,21 @@ const OTPScreen = () => {
                 <Text style={styles.subtitle}>{`We have sent the verification code on \nPhone number +91 7776838833`}</Text>
                 <Text style={styles.editNumber}>Edit Phone number</Text>
                 <Animated.View style={[styles.otpContainer, { transform: [{ translateX: shakeAnimation }] }]}>
-                    <OTPTextInput
-                        inputCount={6}
-                        keyboardType="numeric"
-                        textInputStyle={
-                            styles.otpInput
-                        }
-                        handleTextChange={(text) => {
-                            setOtp(text);
-                            if (isError) setIsError(false);
-                        }}
-                        autoFocus={true}
-                        tintColor={isError ? '#ff0000' : '#07919C'}
-                        offTintColor={isError ? '#ff0000' : '#07919C'}
-
-                    />
+                    {otp.map((digit, index) => (
+                        <TextInput
+                            key={index}
+                            ref={(ref) => inputRefs.current[index] = ref}
+                            style={[styles.otpInput, { borderColor: isError ? '#ff0000' : '#07919C' }]}
+                            keyboardType="numeric"
+                            maxLength={1}
+                            value={digit}
+                            onChangeText={(text) => handleChangeText(text, index)}
+                            onKeyPress={(e) => handleKeyPress(e, index)}
+                            autoFocus={index === 0}
+                        />
+                    ))}
                 </Animated.View>
-                {
-                    isError && <Text style={{
-                        color: 'red',
-                        textAlign: 'justify'
-                    }}>Incorrect code. Please try again</Text>
-                }
+                {isError && <Text style={styles.errorText}>Incorrect code. Please try again</Text>}
                 <TouchableOpacity style={styles.verifyButton} onPress={handleVerifyOTP}>
                     <Text style={styles.verifyButtonText}>Verify</Text>
                 </TouchableOpacity>
@@ -110,7 +123,7 @@ const styles = StyleSheet.create({
     otpContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignSelf: 'center'
+        alignItems: 'center'
     },
     otpInput: {
         borderWidth: 1.5,
@@ -120,6 +133,10 @@ const styles = StyleSheet.create({
         color: '#000',
         width: 45,
         height: 60,
+    },
+    errorText: {
+        color: 'red',
+        textAlign: 'justify'
     },
     verifyButton: {
         marginTop: 20,

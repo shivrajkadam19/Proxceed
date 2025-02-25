@@ -3,7 +3,7 @@ import { View, ScrollView, Image, Dimensions, TouchableOpacity, Text, TextInput,
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, interpolateColor } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { replace } from '../../../utils/NavigationUtil';
+import { navigate, replace } from '../../../utils/NavigationUtil';
 
 const { width } = Dimensions.get('window');
 
@@ -80,7 +80,10 @@ const AuthScreen: FC = ({ route }) => {
                     <>
                         <View style={{ marginBottom: 20 }}>
                             <Text style={styles.label}>Select Country*</Text>
-                            <TextInput style={styles.input} placeholder="Enter your email" placeholderTextColor={'black'} />
+                            {/* <TextInput style={styles.input} placeholder="Enter your email" placeholderTextColor={'black'} /> */}
+                            <TouchableOpacity onPress={()=>navigate('CountrySelectionScreen')} style={styles.input}>
+                                <Text>Select Country</Text>
+                            </TouchableOpacity>
                         </View>
                         <View style={{ marginBottom: 20 }}>
                             <Text style={styles.label}>Password*</Text>
@@ -117,7 +120,7 @@ const AuthScreen: FC = ({ route }) => {
                     <Text style={styles.socialText}>Continue with Apple</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={[styles.socialButton, styles.guestButton]}>
+                <TouchableOpacity onPress={() => replace('InterestSelectionScreen')} style={[styles.socialButton, styles.guestButton]}>
                     <Text style={[styles.socialText, { color: '#07919C' }]}>Guest Login</Text>
                 </TouchableOpacity>
             </View>

@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MyTabBar from './MyTabBar';
 import HomeScreen from '../features/HomeScreen/HomeScreen';
 import Icon from '../components/common/Icon';
+import ShopScreen from '../features/HomeScreen/ShopScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -38,7 +39,7 @@ export default function TabNavigator() {
             />
             <Tab.Screen
                 name="Shop"
-                component={HomeScreen}
+                component={ShopScreen}
                 options={{
                     tabBarLabel: "Shop",
                     tabBarIcon: ({ color, size }) => (<Icon color={color} size={size} name='shopping-bag' iconFamily={'FontAwesome5'} />),

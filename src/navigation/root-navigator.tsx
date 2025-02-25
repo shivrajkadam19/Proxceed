@@ -8,6 +8,8 @@ import HomeScreen from '../features/HomeScreen/HomeScreen';
 import TabNavigator from './auth-stack';
 import CustomStatusBar from '../components/common/CustomStatusBar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import InterestSelectionScreen from '../features/auth/screens/InterestSelectionScreen';
+import CountrySelectionScreen from '../features/auth/screens/CountrySelectionScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +29,8 @@ const RootNavigator = () => {
                 <Stack.Screen name='OnboardingScreen' component={OnboardingScreen} />
                 <Stack.Screen name='AuthScreen' component={AuthScreen} />
                 <Stack.Screen name='OTPScreen' component={OTPScreen} />
+                <Stack.Screen name='InterestSelectionScreen' component={InterestSelectionScreen} />
+                <Stack.Screen name='CountrySelectionScreen' component={CountrySelectionScreen} />
                 <Stack.Screen name='TabNavigation' component={TabNavigator} />
             </Stack.Navigator>
         </SafeAreaProvider>
