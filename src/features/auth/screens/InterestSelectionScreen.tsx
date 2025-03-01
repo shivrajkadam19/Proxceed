@@ -9,6 +9,8 @@ import {
     PixelRatio,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
+import { PADDING_HORIZONTAL } from "../../../utils/Constants";
+import { ScrollView } from "react-native-gesture-handler";
 
 const { width, height } = Dimensions.get("window");
 const scaleFont = (size: number) => size * PixelRatio.getFontScale();
@@ -46,40 +48,54 @@ const InterestSelectionScreen = () => {
     ];
 
     return (
-        <LinearGradient colors={["#ffffff", "#9CE6EC"]} style={styles.container}>
-            <Text style={styles.title}>"Select Your Area of Interest"</Text>
-            <Text style={styles.subtitle}>
-                Let us know your professional interests to tailor your experience
-            </Text>
+        <ScrollView contentContainerStyle={{
+            flex:1,
+            justifyContent:'center',
+            alignItems:'center',
+        }}>
+
+            <View style={{
+                flex:1,
+
+            }}>
+                <LinearGradient colors={["#ffffff", "#329298"]} >
+                    <View><Text>kjbjb</Text></View>
+                </LinearGradient>
+            </View>
+            <View style={styles.container}>
+                <Text style={styles.title}>"Select Your Area of Interest"</Text>
+                <Text style={styles.subtitle}>
+                    Let us know your professional interests to tailor your experience
+                </Text>
+                <View style={styles.chipContainer}>
+                    {sortedInterests.map((item) => {
+                        const isSelected = selectedInterests.includes(item);
+                        return (
+                            <Pressable
+                                key={item}
+                                onPress={() => toggleSelection(item)}
+                                style={[
+                                    styles.option,
+                                    isSelected && styles.selectedOption,
+                                ]}
+                            >
+                                <Text style={[styles.optionText, isSelected && styles.selectedText]}>
+                                    {item}
+                                </Text>
+                            </Pressable>
+                        );
+                    })}
+                </View>
+
+            </View>
             {
                 isEmpty(selectedInterests) ?
                     (<Text style={styles.subtitle}>Select any five</Text>)
                     :
-                    (<Text>{selectedInterests.length}/5</Text>)
+                    (<Text style={styles.subtitle}>{selectedInterests.length}/5</Text>)
             }
 
-
-            <View style={styles.chipContainer}>
-                {sortedInterests.map((item) => {
-                    const isSelected = selectedInterests.includes(item);
-                    return (
-                        <Pressable
-                            key={item}
-                            onPress={() => toggleSelection(item)}
-                            style={[
-                                styles.option,
-                                isSelected && styles.selectedOption,
-                            ]}
-                        >
-                            <View style={[styles.circle, isSelected && styles.selectedCircle]} />
-                            <Text style={[styles.optionText, isSelected && styles.selectedText]}>
-                                {item}
-                            </Text>
-                        </Pressable>
-                    );
-                })}
-            </View>
-        </LinearGradient>
+        </ScrollView>
     );
 };
 
@@ -89,7 +105,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        paddingHorizontal: width * 0.05,
+        paddingHorizontal: PADDING_HORIZONTAL,
     },
     title: {
         fontSize: scaleFont(24),
@@ -120,7 +136,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
         borderRadius: 20,
         marginVertical: 5,
-        minWidth: 100,
+        minWidth: 80,
     },
     selectedOption: {
         backgroundColor: "#a2e3f6",
@@ -141,6 +157,7 @@ const styles = StyleSheet.create({
         fontSize: scaleFont(12),
         color: "#333",
         fontWeight: 500,
+        textAlign: 'center'
     },
     selectedText: {
         color: "#fff",

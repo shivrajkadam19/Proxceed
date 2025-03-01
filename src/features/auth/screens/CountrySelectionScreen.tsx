@@ -1,10 +1,13 @@
 import axios from 'axios';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import {
     View, Text, ActivityIndicator, FlatList, TextInput, TouchableOpacity, StyleSheet, Image
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { debounce } from 'lodash';
+import { goBack, navigate } from '../../../utils/NavigationUtil';
+import FastImage from 'react-native-fast-image'
+import Icon from '../../../components/common/Icon';
+import { PADDING_HORIZONTAL } from '../../../utils/Constants';
 
 const CountrySelectionScreen = ({ route }: any) => {
     interface Country {
@@ -19,7 +22,6 @@ const CountrySelectionScreen = ({ route }: any) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
-    const navigation = useNavigation();
 
     useEffect(() => {
         fetchCountries();
@@ -33,7 +35,7 @@ const CountrySelectionScreen = ({ route }: any) => {
             const formattedData = response.data.map((country: any) => ({
                 alpha3Code: country.alpha3Code,
                 name: country.name,
-                flag: country.flags?.svg || '',
+                flag: country.flags?.png || '',
                 callingCodes: country.callingCodes || ['N/A'],
             }));
             setCountries(formattedData);
@@ -44,31 +46,32 @@ const CountrySelectionScreen = ({ route }: any) => {
             setLoading(false);
         }
     };
-
     const handleSearch = useCallback(
         debounce((text: string) => {
-            if (text) {
-                const filtered = countries.filter((country) =>
-                    country.name.toLowerCase().includes(text.toLowerCase())
-                );
-                setFilteredCountries(filtered);
-            } else {
-                setFilteredCountries(countries);
-            }
+            setFilteredCountries(
+                text
+                    ? countries.filter((country) =>
+                        country.name.toLowerCase().includes(text.toLowerCase())
+                    )
+                    : countries
+            );
         }, 300),
         [countries]
     );
+
+
+
 
     const handleSelectCountry = (country: Country) => {
         if (route.params?.onCountrySelect) {
             route.params.onCountrySelect(country);
         }
-        navigation.goBack();
+        goBack();
     };
 
     if (loading) {
         return (
-            <View style={styles.centered}>
+            <View style={[styles.centered]}>
                 <ActivityIndicator size="large" color="#007AFF" />
                 <Text style={styles.loadingText}>Loading countries...</Text>
             </View>
@@ -77,7 +80,7 @@ const CountrySelectionScreen = ({ route }: any) => {
 
     if (error) {
         return (
-            <View style={styles.centered}>
+            <View style={[styles.centered, styles.container]}>
                 <Text style={styles.errorText}>{error}</Text>
                 <TouchableOpacity style={styles.retryButton} onPress={fetchCountries}>
                     <Text style={styles.retryText}>Retry</Text>
@@ -86,33 +89,63 @@ const CountrySelectionScreen = ({ route }: any) => {
         );
     }
 
+
+    const Header = () => {
+        return (
+            <View style={{
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+            }}>
+                <TouchableOpacity onPress={() => goBack()}>
+                    <Icon iconFamily={'Ionicons'} name="arrow-back-outline" size={25} color={"#9E9E9E"} />
+                </TouchableOpacity>
+                <View style={styles.searchContainer}>
+                    <TextInput
+                        placeholder="Search..."
+                        placeholderTextColor="#9E9E9E"
+                        style={styles.input}
+                        value={search}
+                        onChangeText={(text) => {
+                            setSearch(text);
+                            handleSearch(text);
+                        }}
+                        autoFocus={true}
+                    />
+
+                    <Icon iconFamily={'Ionicons'} name="search" size={20} color={"#9E9E9E"} />
+                </View>
+            </View>
+
+        );
+    };
+
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Text style={styles.backText}>{'< Back'}</Text>
-            </TouchableOpacity>
-            <TextInput
-                style={styles.searchInput}
-                placeholder="Search country..."
-                value={search}
-                onChangeText={(text) => {
-                    setSearch(text);
-                    handleSearch(text);
-                }}
-            />
             <FlatList
                 data={filteredCountries}
                 keyExtractor={(item) => item.alpha3Code}
+                ListHeaderComponent={Header}
+                keyboardShouldPersistTaps="handled"
                 renderItem={({ item }) => (
                     <TouchableOpacity style={styles.countryItem} onPress={() => handleSelectCountry(item)}>
                         <View style={styles.textContainer}>
-                            <Image source={{ uri: item.flag }} style={styles.flag} />
+                            <FastImage
+                                style={styles.flag}
+                                source={{
+                                    uri: item.flag,
+                                    priority: FastImage.priority.high,
+                                }}
+                                resizeMode={FastImage.resizeMode.contain}
+                            />
                             <Text style={styles.countryText}>{item.name}</Text>
                         </View>
                         <Text style={styles.callingCode}>+{item.callingCodes[0]}</Text>
                     </TouchableOpacity>
                 )}
             />
+
         </View>
     );
 };
@@ -140,7 +173,7 @@ const styles = StyleSheet.create({
     },
     retryButton: {
         paddingVertical: 10,
-        paddingHorizontal: 20,
+        paddingHorizontal: PADDING_HORIZONTAL,
         backgroundColor: '#007AFF',
         borderRadius: 5,
     },
@@ -161,7 +194,7 @@ const styles = StyleSheet.create({
         borderColor: '#CCC',
         borderWidth: 1,
         borderRadius: 8,
-        paddingHorizontal: 10,
+        paddingHorizontal: PADDING_HORIZONTAL,
         backgroundColor: '#FFF',
         marginBottom: 10,
     },
@@ -169,15 +202,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         padding: 15,
-        backgroundColor: '#FFF',
-        borderRadius: 8,
-        marginBottom: 10,
         justifyContent: 'space-between',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.2,
-        shadowRadius: 2,
-        elevation: 2,
     },
     flag: {
         width: 40,
@@ -194,7 +219,23 @@ const styles = StyleSheet.create({
     },
     callingCode: {
         fontSize: 14,
-        color: '#666',
+        color: '#0000FF',
+    },
+    input: {
+        flex: 1,
+        fontSize: 16,
+        color: "#333",
+    },
+    searchContainer: {
+        flex: 1,
+        flexDirection: "row",
+        backgroundColor: "#F5F5F5",
+        alignItems: 'center',
+        borderRadius: 20,
+        paddingHorizontal: PADDING_HORIZONTAL,
+        height: 40,
+        borderColor: '#000000',
+        borderWidth: 1
     },
 });
 

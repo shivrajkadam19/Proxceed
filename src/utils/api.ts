@@ -1,11 +1,11 @@
 import axios from "axios";
-import { getCredentials, saveCredentials, clearCredentials } from "../utils/keychain";
-import { addToOfflineQueue, processOfflineQueue } from "../utils/offlineQueue";
+import { getCredentials, saveCredentials, clearCredentials } from "./keychain";
+import { addToOfflineQueue, processOfflineQueue } from "../services/offlineQueue";
 import { store } from "../app/redux/store";
 import { logout, setTokens } from "../app/redux/slices/authSlice";
-import { getConnectionStatus, subscribeToNetworkChanges } from "../utils/networkStatus";
+import { getConnectionStatus, subscribeToNetworkChanges } from "./networkStatus";
 
-const API_BASE_URL = "https://your-api.com";
+const API_BASE_URL = "https://dummyjson.com/auth";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -14,18 +14,18 @@ const api = axios.create({
 });
 
 let isRefreshing = false;
-let refreshSubscribers = [];
+let refreshSubscribers: ((newToken: string) => void)[] = [];
 
-const onTokenRefreshed = (newToken) => {
+const onTokenRefreshed = (newToken: string) => {
   refreshSubscribers.forEach((callback) => callback(newToken));
   refreshSubscribers = [];
 };
 
-const addRefreshSubscriber = (callback) => {
+const addRefreshSubscriber = (callback: (newToken: string) => void) => {
   refreshSubscribers.push(callback);
 };
 
-// Automatic sync when internet is restored
+// Automatically retry failed offline requests when internet is restored
 subscribeToNetworkChanges(async (isOnline) => {
   if (isOnline) {
     console.log("🌐 Internet restored! Syncing offline requests...");
@@ -33,24 +33,25 @@ subscribeToNetworkChanges(async (isOnline) => {
   }
 });
 
-// Request interceptor
+// Request Interceptor
 api.interceptors.request.use(async (config) => {
   const credentials = await getCredentials();
   if (credentials?.accessToken) {
     config.headers.Authorization = `Bearer ${credentials.accessToken}`;
   }
 
-  // If offline, save request for later retry
-  if (!getConnectionStatus()) {
+  const isConnected = await getConnectionStatus();
+  if (!isConnected) {
     console.warn("⚠️ No internet, queuing request...");
     await addToOfflineQueue(config);
     return Promise.reject({ message: "No internet connection" });
   }
 
+
   return config;
 });
 
-// Response interceptor for token refresh & retry logic
+// Response Interceptor for Token Refresh & Retry Logic
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -87,13 +88,21 @@ api.interceptors.response.use(
         console.log("🔄 Token refreshed successfully.");
 
         await saveCredentials(data.accessToken, data.refreshToken);
-        store.dispatch(setTokens({ accessToken: data.accessToken, refreshToken: data.refreshToken }));
+        // store.dispatch(setTokens({ accessToken: data.accessToken, refreshToken: data.refreshToken }));
+
+        store.dispatch(setTokens({
+          accessToken: data.accessToken,
+          refreshToken: data.refreshToken,
+          user: data.user || null
+        }));
+
 
         isRefreshing = false;
         onTokenRefreshed(data.accessToken);
 
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
-        return api(originalRequest); // Retry failed request
+        return api(originalRequest); // ✅ Ensure request is retried with new token
+
       } catch (refreshError) {
         console.error("❌ Token refresh failed, logging out user.");
         store.dispatch(logout());
@@ -104,7 +113,8 @@ api.interceptors.response.use(
     }
 
     // Handle request failure & retry logic
-    if (!getConnectionStatus()) {
+    const isConnected = await getConnectionStatus();
+    if (!isConnected) {
       console.warn("⚠️ No internet, retrying request later...");
       await addToOfflineQueue(originalRequest);
       return Promise.reject(error);

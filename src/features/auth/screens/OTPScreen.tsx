@@ -7,18 +7,21 @@ import {
     ScrollView,
     TouchableOpacity,
     Animated,
-    TextInput
+    TextInput,
+    NativeSyntheticEvent,
+    TextInputKeyPressEventData
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { navigate } from '../../../utils/NavigationUtil';
 
 const { width } = Dimensions.get('window');
 
-const OTPScreen = () => {
-    const navigation = useNavigation();
+const OTPScreen = ({ route }: any) => {
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [isError, setIsError] = useState(false);
     const shakeAnimation = useRef(new Animated.Value(0)).current;
-    const inputRefs = useRef([]);
+    const inputRefs = useRef<(TextInput | null)[]>([]);
+
+    const { phoneNumber, callingCode } = route?.params;
 
     const handleVerifyOTP = () => {
         const enteredOTP = otp.join('');
@@ -26,7 +29,8 @@ const OTPScreen = () => {
             setIsError(true);
             startShake();
         } else {
-            console.log('OTP Verified');
+            // console.log('OTP Verified');
+            setIsError(false);
         }
     };
 
@@ -39,7 +43,7 @@ const OTPScreen = () => {
         ]).start(() => shakeAnimation.setValue(0));
     };
 
-    const handleChangeText = (text, index) => {
+    const handleChangeText = (text: string, index: number) => {
         if (text.length > 1) return; // Prevent more than one character
 
         let newOtp = [...otp];
@@ -51,7 +55,7 @@ const OTPScreen = () => {
         }
     };
 
-    const handleKeyPress = (e, index) => {
+    const handleKeyPress = (e: NativeSyntheticEvent<TextInputKeyPressEventData>, index: number) => {
         if (e.nativeEvent.key === 'Backspace' && !otp[index] && index > 0) {
             inputRefs.current[index - 1]?.focus();
         }
@@ -61,7 +65,7 @@ const OTPScreen = () => {
         <ScrollView contentContainerStyle={styles.scrollContainer}>
             <View style={styles.container}>
                 <Text style={styles.title}>{`Enter the 6-digit \nVerification code`}</Text>
-                <Text style={styles.subtitle}>{`We have sent the verification code on \nPhone number +91 7776838833`}</Text>
+                <Text style={styles.subtitle}>{`We have sent the verification code on \nPhone number +${callingCode} ${phoneNumber}`}</Text>
                 <Text style={styles.editNumber}>Edit Phone number</Text>
                 <Animated.View style={[styles.otpContainer, { transform: [{ translateX: shakeAnimation }] }]}>
                     {otp.map((digit, index) => (
@@ -82,7 +86,7 @@ const OTPScreen = () => {
                 <TouchableOpacity style={styles.verifyButton} onPress={handleVerifyOTP}>
                     <Text style={styles.verifyButtonText}>Verify</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate('TabNavigation')} style={styles.resendButton}>
+                <TouchableOpacity onPress={() => navigate('TabNavigation')} style={styles.resendButton}>
                     <Text style={styles.resendButtonText}>Resend Code</Text>
                 </TouchableOpacity>
             </View>
