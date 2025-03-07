@@ -1,26 +1,51 @@
 {
   "project_info": {
-    "project_number": "748832285152",
-    "project_id": "proxceed-c695d",
-    "storage_bucket": "proxceed-c695d.firebasestorage.app"
+    "project_number": "916891373176",
+    "project_id": "proxceed-1b24c",
+    "storage_bucket": "proxceed-1b24c.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:748832285152:android:d9e6c12b4f194d82cf4b85",
+        "mobilesdk_app_id": "1:916891373176:android:c4b9af5c665dd87849278d",
         "android_client_info": {
           "package_name": "com.proxceed"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "916891373176-mftr57hiic581u139i5rq90aonc5g01p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.proxceed",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "916891373176-6u27d3k17sukr0ecb7o96sfk4u7o2f1q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyDhKuouDebHNXZ-9XhdurIXXLipaEHVzGk"
+          "current_key": "AIzaSyBYtxCLzjpbq-4ZOeV9z0GYGUCvfOT2OIE"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "916891373176-6u27d3k17sukr0ecb7o96sfk4u7o2f1q.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "916891373176-teajrlivarklpt57htk6ag5j5ds1nso0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.proxceed"
+              }
+            }
+          ]
         }
       }
     }

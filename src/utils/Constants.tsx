@@ -28,20 +28,6 @@ export const GAP_LARGE = 24;
 export const IS_IOS = Platform.OS === "ios";
 export const IS_ANDROID = Platform.OS === "android";
 
-// Colors
-export const COLORS = {
-  PRIMARY: "#007bff",
-  SECONDARY: "#6c757d",
-  SUCCESS: "#28a745",
-  ERROR: "#dc3545",
-  WARNING: "#ffc107",
-  INFO: "#17a2b8",
-  LIGHT: "#f8f9fa",
-  DARK: "#343a40",
-  WHITE: "#ffffff",
-  BLACK: "#000000",
-};
-
 // Font Sizes
 export const FONT_SIZES = {
   SMALL: 12,

@@ -43,7 +43,7 @@ const App = () => {
             <RootNavigator />
           </NavigationContainer>
         </GestureHandlerRootView>
-      </PersistGate>
+      </PersistGate>                                                                                                                    
     </Provider>
   );
 };

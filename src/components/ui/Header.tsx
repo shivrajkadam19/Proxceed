@@ -10,7 +10,7 @@ const Header = ({ placeholder = "Search..." }) => {
         <View style={styles.container}>
             {/* Profile Avatar */}
             <TouchableOpacity onPress={() => openDrawer()} style={styles.avatarContainer}>
-                <Image source={require('../assets/images/profile.png')} style={styles.avatar} />
+                <Image source={require('../../assets/images/profile.png')} style={styles.avatar} />
             </TouchableOpacity>
 
             {/* Search Bar */}

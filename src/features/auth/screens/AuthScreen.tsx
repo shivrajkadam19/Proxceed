@@ -1,22 +1,69 @@
 import React, { FC, useEffect, useState } from 'react';
-import { View, ScrollView, Image, Dimensions, TouchableOpacity, Text, TextInput, StyleSheet } from 'react-native';
+import { View, ScrollView, Image, Dimensions, TouchableOpacity, Text, TextInput, StyleSheet, ToastAndroid } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, interpolateColor } from 'react-native-reanimated';
-import { useNavigation } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { navigate, replace } from '../../../utils/NavigationUtil';
 import Icon from '../../../components/common/Icon';
 import FastImage from 'react-native-fast-image';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import { useAuth } from '../../../app/redux/hooks/useAuth';
+import Loading from '../../../components/common/Loading';
 
 const { width } = Dimensions.get('window');
 
 const AuthScreen: FC = ({ route }: any) => {
-    const navigation = useNavigation();
 
     const initialTab = route.params?.tab || 0;
     const toggleValue = useSharedValue(initialTab);
     const [activeTab, setActiveTab] = useState<'login' | 'signup'>(initialTab === 0 ? 'login' : 'signup');
     const [selectedCountry, setSelectedCountry] = useState<any>(null);
     const [phoneNumber, setPhoneNumber] = useState<string>('');
+
+    const { signIn, loading } = useAuth();
+
+    useEffect(() => {
+        GoogleSignin.configure({
+            webClientId: "916891373176-6u27d3k17sukr0ecb7o96sfk4u7o2f1q.apps.googleusercontent.com",
+        });
+    }, []);
+
+    const showToast = (message: string) => {
+        ToastAndroid.show(message, ToastAndroid.SHORT);
+    };
+
+    const handleGoogleSignIn = async () => {
+        try {
+            await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+
+            // ✅ Ensure Google Sign Out before attempting sign-in to force account selection modal
+            // await GoogleSignin.signOut();
+            // await GoogleSignin.revokeAccess();
+
+            const response = await GoogleSignin.signIn();
+            showToast("Google Sign-In Successful");
+
+            // ✅ Extract idToken
+            const idToken = response?.data?.idToken;
+
+            if (idToken) {
+                showToast("ID Token received");
+                await signIn("google", { token: idToken });
+            } else {
+                showToast("Google Sign-In failed: No ID Token received");
+            }
+        } catch (error: any) {
+            if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+                showToast("User cancelled the login");
+            } else if (error.code === statusCodes.IN_PROGRESS) {
+                showToast("Sign-in in progress");
+            } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                showToast("Play services not available");
+            } else {
+                showToast("Google Sign-In Error: " + error.message);
+            }
+        }
+    };
+
 
     const handleCountrySelect = (country: any) => {
         setSelectedCountry(country); // Update selected country
@@ -46,6 +93,13 @@ const AuthScreen: FC = ({ route }: any) => {
     }));
 
     console.log(selectedCountry?.alpha3Code)
+
+    if (loading) {
+        return (
+            <Loading />
+        )
+
+    }
 
     return (
         <ScrollView contentContainerStyle={{ flexGrow: 1, backgroundColor: '#ffffff' }}>
@@ -176,7 +230,7 @@ const AuthScreen: FC = ({ route }: any) => {
                 </View>
 
                 {/* Social Login Buttons */}
-                <TouchableOpacity style={styles.socialButton}>
+                <TouchableOpacity onPress={handleGoogleSignIn} style={styles.socialButton}>
                     {/* <FontAwesome name="google" size={20} color="#000000" style={styles.icon} /> */}
                     <FastImage
                         source={require('../../../assets/images/google.png')}

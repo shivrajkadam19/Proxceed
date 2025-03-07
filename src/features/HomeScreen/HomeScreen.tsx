@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react'
-import { View, Text, Image, Pressable, Dimensions, ScrollView, TouchableOpacity, TextInput, Button } from 'react-native'
-const { width, height } = Dimensions.get('window');
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, ScrollView, TouchableOpacity, } from 'react-native'
 import notifee, { AndroidStyle } from '@notifee/react-native';
 import Header from '../../components/ui/Header';
+import { useAuth } from '../../app/redux/hooks/useAuth';
+import { resetAndNavigate } from '../../utils/NavigationUtil';
+import Loading from '../../components/common/Loading';
 const HomeScreen = () => {
-    const navigation = useNavigation();
+    const { user, signOut } = useAuth();
 
     const displayNotifications = async () => {
         // Request permissions (required for iOS)
@@ -49,16 +50,22 @@ const HomeScreen = () => {
 
     }
 
+    if (user === undefined) {
+        return (
+            <Loading />
+        )
+    }
+
     return (
         <ScrollView
             contentContainerStyle={{
                 flex: 1,
                 // justifyContent: 'center',
-                // backgroundColor: 'red'
+                // backgroundColor: 'green'
             }}
         >
             <Header />
-            <View>
+            {/* <View>
                 <TouchableOpacity style={{
                     width: 100,
                     backgroundColor: 'green',
@@ -67,7 +74,44 @@ const HomeScreen = () => {
 
                     <Text>Disply notification</Text>
                 </TouchableOpacity>
+            </View> */}
+            {/* <View style={{
+                flex: 1,
+                backgroundColor: 'red'
+            }}>
+                <Text style={{ textAlign: 'center', flex: 1, color: '#000000' }}>
+                    {user?.userName ? user?.data?.userName : "Lavdya chya bala"}
+                </Text>
+                <Text style={{ textAlign: 'center', flex: 1, color: '#000000' }}>
+                    {user?.anonymousId}
+                </Text>
+                <Text style={{ textAlign: 'center', flex: 1, color: '#000000' }}>
+                    {user?.email}
+                </Text>
+                <Image source={{ uri: user?.profileImage }} />
+            </View> */}
+
+            <View style={{
+                flex: 1,
+                marginTop: 100
+            }}>
+                <TouchableOpacity style={{
+                    width: 100,
+                    backgroundColor: 'green',
+                    alignSelf: 'center'
+                }} onPress={() => signOut(resetAndNavigate)} >
+
+                    <Text>Log Out</Text>
+                </TouchableOpacity>
             </View>
+
+            <View style={{
+                flex: 1,
+                backgroundColor: 'green'
+            }}>
+                <Text style={{ color: 'black' }}> {user}</Text>
+            </View>
+
         </ScrollView>
     )
 }
