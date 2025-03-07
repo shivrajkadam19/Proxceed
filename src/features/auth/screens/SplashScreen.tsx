@@ -1,14 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, Dimensions, ScrollView } from 'react-native';
 import { replace } from '../../../utils/NavigationUtil';
 const { width, height } = Dimensions.get('window');
-
+import { useAuth } from '../../../app/redux/hooks/useAuth';
 const SplashScreen = () => {
-
+    const { isAuthenticated } = useAuth();
     useEffect(() => {
         const timer = setTimeout(() => {
-            // console.log('succes')
-            replace('OnboardingScreen');
+
+            isAuthenticated ?
+                replace('TabNavigation') :
+                replace('OnboardingScreen')
+
         }, 3000);
 
         return () => clearTimeout(timer); // Cleanup the timer

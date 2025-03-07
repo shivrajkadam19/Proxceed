@@ -5,7 +5,7 @@ import { store } from "../app/redux/store";
 import { logout, setTokens } from "../app/redux/slices/authSlice";
 import { getConnectionStatus, subscribeToNetworkChanges } from "./networkStatus";
 
-const API_BASE_URL = "https://dummyjson.com/auth";
+const API_BASE_URL = "https://prospherebackend.onrender.com/api/v1";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -81,7 +81,7 @@ api.interceptors.response.use(
           return Promise.reject(error);
         }
 
-        const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, {
+        const { data } = await axios.post(`${API_BASE_URL}/auth/refresh-token`, {
           refreshToken: credentials.refreshToken,
         });
 

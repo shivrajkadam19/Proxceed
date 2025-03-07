@@ -1,6 +1,6 @@
 {
   "name": "Proxceed",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -15,6 +15,9 @@
     "@react-native-camera-roll/camera-roll": "^7.9.0",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-native-community/netinfo": "^11.4.1",
+    "@react-native-firebase/app": "^21.12.0",
+    "@react-native-firebase/auth": "^21.12.0",
+    "@react-native-google-signin/google-signin": "^13.2.0",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/drawer": "^7.1.1",
     "@react-navigation/native": "^7.0.14",
