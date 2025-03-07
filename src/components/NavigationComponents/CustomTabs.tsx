@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, View, TouchableOpacity, Text, Keyboard } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import FloatingActionButton from '../components/common/FloatingActionButton';
+import FloatingActionButton from '../common/FloatingActionButton';
 import CurvedBottomBar from './CurvedBottomBar';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing } from 'react-native-reanimated';
 
@@ -12,7 +12,7 @@ const TabShape = () => (
     <CurvedBottomBar width={width} height={80} curveDepth={50} curveWidth={45} cornerRadius={0} />
 );
 
-const MyTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
+const CustomTabs: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
     const opacity = useSharedValue(1);
     const translateY = useSharedValue(0);
 
@@ -131,4 +131,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default MyTabBar;
+export default CustomTabs;

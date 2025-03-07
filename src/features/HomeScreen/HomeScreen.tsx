@@ -3,6 +3,7 @@ import { View, Text, Image, Pressable, Dimensions, ScrollView, TouchableOpacity,
 const { width, height } = Dimensions.get('window');
 import { useNavigation } from '@react-navigation/native';
 import notifee, { AndroidStyle } from '@notifee/react-native';
+import Header from '../../components/ui/Header';
 const HomeScreen = () => {
     const navigation = useNavigation();
 
@@ -52,10 +53,11 @@ const HomeScreen = () => {
         <ScrollView
             contentContainerStyle={{
                 flex: 1,
-                justifyContent: 'center',
-                backgroundColor: 'red'
+                // justifyContent: 'center',
+                // backgroundColor: 'red'
             }}
         >
+            <Header />
             <View>
                 <TouchableOpacity style={{
                     width: 100,

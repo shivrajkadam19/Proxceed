@@ -1,16 +1,17 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import MyTabBar from './MyTabBar';
+import CustomTabs from '../components/NavigationComponents/CustomTabs';
 import HomeScreen from '../features/HomeScreen/HomeScreen';
 import Icon from '../components/common/Icon';
 import ShopScreen from '../features/HomeScreen/ShopScreen';
+import EventScreen from '../features/EventScreen/EventScreen';
 
 const Tab = createBottomTabNavigator();
 
-export default function TabNavigator() {
+const TabNavigator = () => {
     return (
         <Tab.Navigator
-            tabBar={(props) => <MyTabBar {...props} />}
+            tabBar={(props) => <CustomTabs {...props} />}
             screenOptions={{ headerShown: false }}
 
         >
@@ -24,10 +25,10 @@ export default function TabNavigator() {
             />
             <Tab.Screen
                 name="My Network"
-                component={HomeScreen}
+                component={EventScreen}
                 options={{
                     tabBarLabel: "Network",
-                    tabBarIcon: ({ color, size }) => (<Icon name="people" color={color} size={size} iconFamily={'Ionicons'} />),
+                    tabBarIcon: ({ color, size }) => (<Icon name="event-note" color={color} size={size} iconFamily={'MaterialIcons'} />),
                 }}
             />
             <Tab.Screen
@@ -56,3 +57,5 @@ export default function TabNavigator() {
         </Tab.Navigator>
     );
 }
+
+export default TabNavigator;

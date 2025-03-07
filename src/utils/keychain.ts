@@ -1,7 +1,6 @@
 import * as Keychain from "react-native-keychain";
 
-// Save credentials securely
-export const saveCredentials = async (accessToken, refreshToken) => {
+export const saveCredentials = async (accessToken: string, refreshToken: string) => {
     try {
         await Keychain.setGenericPassword("auth", JSON.stringify({ accessToken, refreshToken }));
     } catch (error) {
@@ -9,7 +8,6 @@ export const saveCredentials = async (accessToken, refreshToken) => {
     }
 };
 
-// Retrieve credentials
 export const getCredentials = async () => {
     try {
         const credentials = await Keychain.getGenericPassword();
@@ -20,7 +18,6 @@ export const getCredentials = async () => {
     }
 };
 
-// Delete credentials
 export const clearCredentials = async () => {
     try {
         await Keychain.resetGenericPassword();

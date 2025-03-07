@@ -4,15 +4,23 @@ import Animated, { useSharedValue, useAnimatedStyle, withTiming, interpolateColo
 import { useNavigation } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { navigate, replace } from '../../../utils/NavigationUtil';
+import Icon from '../../../components/common/Icon';
+import FastImage from 'react-native-fast-image';
 
 const { width } = Dimensions.get('window');
 
-const AuthScreen: FC = ({ route }) => {
+const AuthScreen: FC = ({ route }: any) => {
     const navigation = useNavigation();
 
     const initialTab = route.params?.tab || 0;
     const toggleValue = useSharedValue(initialTab);
     const [activeTab, setActiveTab] = useState<'login' | 'signup'>(initialTab === 0 ? 'login' : 'signup');
+    const [selectedCountry, setSelectedCountry] = useState<any>(null);
+    const [phoneNumber, setPhoneNumber] = useState<string>('');
+
+    const handleCountrySelect = (country: any) => {
+        setSelectedCountry(country); // Update selected country
+    };
 
     useEffect(() => {
         setActiveTab(initialTab === 0 ? 'login' : 'signup');
@@ -36,6 +44,8 @@ const AuthScreen: FC = ({ route }) => {
     const signupTextStyle = useAnimatedStyle(() => ({
         color: interpolateColor(toggleValue.value, [0, 1], ['#626262', '#ffffff']),
     }));
+
+    console.log(selectedCountry?.alpha3Code)
 
     return (
         <ScrollView contentContainerStyle={{ flexGrow: 1, backgroundColor: '#ffffff' }}>
@@ -80,22 +90,83 @@ const AuthScreen: FC = ({ route }) => {
                     <>
                         <View style={{ marginBottom: 20 }}>
                             <Text style={styles.label}>Select Country*</Text>
-                            {/* <TextInput style={styles.input} placeholder="Enter your email" placeholderTextColor={'black'} /> */}
-                            <TouchableOpacity onPress={()=>navigate('CountrySelectionScreen')} style={styles.input}>
-                                <Text>Select Country</Text>
+                            <TouchableOpacity
+                                onPress={() =>
+                                    navigate('CountrySelectionScreen', {
+                                        onCountrySelect: handleCountrySelect,
+                                    })
+                                }
+                                style={
+                                    [
+                                        {
+                                            flex: 1,
+                                            flexDirection: 'row',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center'
+                                        },
+                                        styles.inputContainer
+                                    ]
+                                }
+                            >
+                                {selectedCountry ? (
+                                    <View style={styles.inputContainer}>
+                                        <FastImage
+                                            source={{
+                                                uri: selectedCountry.flag,
+                                                priority: FastImage.priority.high,
+                                            }}
+                                            style={{
+                                                width: 30,
+                                                height: 20,
+                                                marginRight: 10,
+                                                borderRadius: 4,
+                                                marginLeft: -(width * 0.05)
+                                            }} />
+
+
+                                        <View style={styles.verticalSeparator} />
+                                        <Text style={styles.countryCode}>+{selectedCountry?.callingCodes[0]}</Text>
+                                    </View>
+                                ) : (
+                                    <View style={styles.inputContainer}>
+                                        <Text>Country</Text>
+                                    </View>
+
+                                )}
+                                <Icon name='angle-right' size={20} color="#000000" iconFamily={"FontAwesome"} />
+
                             </TouchableOpacity>
                         </View>
                         <View style={{ marginBottom: 20 }}>
-                            <Text style={styles.label}>Password*</Text>
-                            <TextInput style={styles.input} placeholder="Enter your password" secureTextEntry placeholderTextColor={'black'} />
+                            <Text style={styles.label}>Phone Number*</Text>
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.countryCode}>+{selectedCountry?.callingCodes[0] ?? "   "}</Text>
+                                <View style={styles.verticalSeparator} />
+                                <TextInput
+                                    // value={phoneNumber}
+                                    onChangeText={(text) => setPhoneNumber(text)}
+                                    style={styles.input}
+                                    placeholder="000000 000000"
+                                    placeholderTextColor={'#A0A0A0'}
+                                    keyboardType="phone-pad"
+                                />
+                            </View>
                         </View>
                     </>
                 )}
 
-                {/* Continue Button */}
-                <TouchableOpacity onPress={() => replace('OTPScreen')} style={styles.submitButton}>
-                    <Text style={styles.submitText}>{activeTab === 'login' ? 'Login' : 'Send OTP'}</Text>
-                </TouchableOpacity>
+
+                {activeTab === 'login' ?
+                    <TouchableOpacity onPress={() => replace('OTPScreen')} style={styles.submitButton}>
+                        <Text style={styles.submitText}>Login</Text>
+                    </TouchableOpacity> :
+                    <TouchableOpacity onPress={() => replace('OTPScreen', {
+                        callingCode: selectedCountry?.callingCodes[0],
+                        phoneNumber: phoneNumber,
+                    })} style={styles.submitButton}>
+                        <Text style={styles.submitText}>Send OTP</Text>
+                    </TouchableOpacity>
+                }
 
                 {/* Separator */}
                 <View style={styles.separatorContainer}>
@@ -107,11 +178,14 @@ const AuthScreen: FC = ({ route }) => {
                 {/* Social Login Buttons */}
                 <TouchableOpacity style={styles.socialButton}>
                     {/* <FontAwesome name="google" size={20} color="#000000" style={styles.icon} /> */}
-                    <Image source={require('../../../assets/images/google.png')} style={[styles.icon, {
-                        height: 20,
-                        width: 20,
-                        resizeMode: 'contain'
-                    }]} />
+                    <FastImage
+                        source={require('../../../assets/images/google.png')}
+                        style={[styles.icon, {
+                            height: 20,
+                            width: 20,
+                        }]}
+                        resizeMode='contain'
+                    />
                     <Text style={styles.socialText}>Continue with Google</Text>
                 </TouchableOpacity>
 
@@ -120,7 +194,7 @@ const AuthScreen: FC = ({ route }) => {
                     <Text style={styles.socialText}>Continue with Apple</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => replace('InterestSelectionScreen')} style={[styles.socialButton, styles.guestButton]}>
+                <TouchableOpacity onPress={() => replace('GuestLoginScreen')} style={[styles.socialButton, styles.guestButton]}>
                     <Text style={[styles.socialText, { color: '#07919C' }]}>Guest Login</Text>
                 </TouchableOpacity>
             </View>
@@ -171,11 +245,28 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         fontSize: 16,
     },
+    inputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#F1F1F1',
+        borderRadius: 25,
+        height: 50,
+        paddingHorizontal: width * 0.05,
+    },
     input: {
+        flex: 1,
         backgroundColor: '#F1F1F1',
         borderRadius: 25,
         paddingHorizontal: width * 0.05,
         height: 50,
+        fontSize: 13,
+        fontWeight: 400
+    },
+    countryCode: {
+        fontSize: 13,
+        color: '#000',
+        marginRight: 10,
+        fontWeight: 400,
     },
     submitButton: {
         backgroundColor: '#07919C',
@@ -199,6 +290,12 @@ const styles = StyleSheet.create({
         flex: 1,
         height: 1,
         backgroundColor: '#ccc',
+    },
+    verticalSeparator: {
+        width: 1,
+        height: '50%', // Adjusted to look centered
+        backgroundColor: 'gray',
+        marginHorizontal: 5,
     },
     separatorText: {
         marginHorizontal: 10,
